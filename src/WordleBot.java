@@ -4,14 +4,10 @@ import java.util.*;
 
 public class WordleBot {
 
-    private Set<String> wordleLA;
-    private Set<String> wordleTA;
+    private final Set<String> wordleTA;
     private Set<String> possibleWords;
     private String lastGuess;
-    private List<Set<Character>> knownInfo;
-    //private StringBuilder knownPattern;
-    //private List<Character> yellows;
-    //private Set<Character> blacks;
+    private final List<Set<Character>> knownInfo;
     private final int GREEN_POINTS = 5;
     private final int YELLOW_POINTS = 2;
     private final char GREEN_CHAR = 'g';
@@ -20,13 +16,9 @@ public class WordleBot {
 
     public WordleBot(String laFile, String taFile) throws FileNotFoundException {
 
-        wordleLA = new HashSet<>();
         wordleTA = new HashSet<>();
         possibleWords = new HashSet<>();
 
-        //knownPattern = new StringBuilder("-----");
-        //yellows = new ArrayList<>();
-        //blacks = new HashSet<>();
         knownInfo = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             Set<Character> allLetters = new HashSet<>();
@@ -39,7 +31,6 @@ public class WordleBot {
         Scanner scanner = new Scanner(new File(laFile));
         while (scanner.hasNext()) {
             String toAdd = scanner.next();
-            wordleLA.add(toAdd);
             wordleTA.add(toAdd);
             possibleWords.add(toAdd);
         }
@@ -57,7 +48,7 @@ public class WordleBot {
                 else if (pattern.charAt(i) == YELLOW_CHAR) knownInfo.get(i).remove(lastGuess.charAt(i));
                 else removeCharFromKnownInfo(lastGuess.charAt(i));
             }
-            filterPossibleWords(pattern);
+            filterPossibleWords();
         }
 
         //System.out.println("Possible words: " + possibleWords.size());
@@ -152,7 +143,7 @@ public class WordleBot {
         return instances;
     }
 
-    private void filterPossibleWords(String pattern) {
+    private void filterPossibleWords() {
 
         Set<String> newWords = new HashSet<>();
         for (String s : possibleWords) {
@@ -168,18 +159,6 @@ public class WordleBot {
             if (!knownInfo.get(i).contains(word.charAt(i))) return false;
         }
 
-        /*for (int i = 0; i < word.length(); i++) {
-            if (knownPattern.charAt(i) != '-' && word.charAt(i) != knownPattern.charAt(i)) return false;
-        }
-
-        for (Character c : yellows) {
-            if (!word.contains(String.valueOf(c))) return false;
-        }
-
-        for (Character c : blacks) {
-            if (word.contains(String.valueOf(c))) return false;
-        }*/
-
         return true;
     }
 
@@ -187,22 +166,6 @@ public class WordleBot {
         for (Set<Character> set : knownInfo) if (set.size() != 1) return false;
         return true;
     }
-
-    /*private boolean patternMatchesWord(String pattern, String guess, String actual) {
-
-        // Validate greens and blacks first for efficiency
-        for (int i = 0; i < pattern.length(); i++) {
-            if (pattern.charAt(i) == GREEN_CHAR) {
-                if (guess.charAt(i) != actual.charAt(i)) return false;
-            } else if (pattern.charAt(i) == BLACK_CHAR) {
-                if (actual.contains(String.valueOf(guess.charAt(i)))) return false;
-            } else { // yellow
-                if (countBlankInstances(guess, actual, guess.charAt(i), pattern) != 0) return false;
-            }
-        }
-
-        return true;
-    }*/
 
     private void makeGreenSet(Set<Character> set, char ch) {
         for (int i = 0; i < 26; i++) {
